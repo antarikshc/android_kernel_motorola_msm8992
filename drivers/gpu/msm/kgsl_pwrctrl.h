@@ -155,7 +155,7 @@ struct kgsl_pwrctrl {
 	unsigned long bus_ab_mbytes;
 	struct device *devbw;
 	unsigned int bus_index[KGSL_MAX_PWRLEVELS];
-	uint64_t bus_ib[KGSL_MAX_PWRLEVELS];
+	uint64_t *bus_ib;
 	struct kgsl_pwr_constraint constraint;
 	bool superfast;
 	struct work_struct thermal_cycle_ws;
