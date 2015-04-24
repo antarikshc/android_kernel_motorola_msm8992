@@ -334,6 +334,7 @@ struct mdss_dsi_ctrl_pdata {
 	int (*cmdlist_commit)(struct mdss_dsi_ctrl_pdata *ctrl, int from_mdp);
 	void (*switch_mode) (struct mdss_panel_data *pdata, int mode);
 	int (*set_hbm)(struct mdss_dsi_ctrl_pdata *ctrl, int state);
+	int (*set_acl)(struct mdss_dsi_ctrl_pdata *ctrl, int state);
 	struct mdss_panel_data panel_data;
 	struct mdss_panel_config panel_config;
 	unsigned char *ctrl_base;
@@ -454,6 +455,8 @@ struct mdss_dsi_ctrl_pdata {
 
 	struct dsi_panel_cmds hbm_on_cmds;
 	struct dsi_panel_cmds hbm_off_cmds;
+	struct dsi_panel_cmds acl_on_cmds;
+	struct dsi_panel_cmds acl_off_cmds;
 };
 
 struct dsi_status_data {
