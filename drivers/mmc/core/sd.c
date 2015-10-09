@@ -1398,7 +1398,6 @@ static const struct mmc_bus_ops mmc_sd_ops = {
 	.power_restore = mmc_sd_power_restore,
 	.alive = mmc_sd_alive,
 	.change_bus_speed = mmc_sd_change_bus_speed,
-	.shutdown = mmc_sd_suspend,
 	.throttle_back = mmc_sd_throttle_back,
 };
 
@@ -1410,7 +1409,6 @@ static const struct mmc_bus_ops mmc_sd_ops_unsafe = {
 	.power_restore = mmc_sd_power_restore,
 	.alive = mmc_sd_alive,
 	.change_bus_speed = mmc_sd_change_bus_speed,
-	.shutdown = mmc_sd_suspend,
 	.throttle_back = mmc_sd_throttle_back,
 };
 
