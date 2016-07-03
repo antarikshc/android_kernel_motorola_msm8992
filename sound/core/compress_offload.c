@@ -44,6 +44,13 @@
 #include <sound/compress_offload.h>
 #include <sound/compress_driver.h>
 
+/* struct snd_compr_codec_caps overflows the ioctl bit size for some
+ * architectures, so we need to disable the relevant ioctls.
+ */
+#if _IOC_SIZEBITS < 14
+#define COMPR_CODEC_CAPS_OVERFLOW
+#endif
+
 /* TODO:
  * - add substream support for multiple devices in case of
  *	SND_DYNAMIC_MINORS is not used
@@ -443,6 +450,7 @@ out:
 	return retval;
 }
 
+#ifndef COMPR_CODEC_CAPS_OVERFLOW
 static int
 snd_compr_get_codec_caps(struct snd_compr_stream *stream, unsigned long arg)
 {
@@ -466,6 +474,7 @@ out:
 	kfree(caps);
 	return retval;
 }
+#endif /* !COMPR_CODEC_CAPS_OVERFLOW */
 
 /* revisit this with snd_pcm_preallocate_xxx */
 static int snd_compr_allocate_buffer(struct snd_compr_stream *stream,
@@ -837,9 +846,20 @@ static long snd_compr_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 	stream = &data->stream;
 	if (snd_BUG_ON(!stream))
 		return -EFAULT;
-
 	mutex_lock(&stream->device->lock);
 	switch (_IOC_NR(cmd)) {
+	case _IOC_NR(SNDRV_COMPRESS_IOCTL_VERSION):
+		retval = put_user(SNDRV_COMPRESS_VERSION,
+				(int __user *)arg) ? -EFAULT : 0;
+		break;
+	case _IOC_NR(SNDRV_COMPRESS_GET_CAPS):
+		retval = snd_compr_get_caps(stream, arg);
+		break;
+#ifndef COMPR_CODEC_CAPS_OVERFLOW
+	case _IOC_NR(SNDRV_COMPRESS_GET_CODEC_CAPS):
+		retval = snd_compr_get_codec_caps(stream, arg);
+		break;
+#endif
 	case _IOC_NR(SNDRV_COMPRESS_SET_PARAMS):
 		retval = snd_compr_set_params(stream, arg);
 		break;
@@ -891,15 +911,15 @@ static long snd_compr_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 }
 
 static const struct file_operations snd_compr_file_ops = {
-		.owner =          THIS_MODULE,
-		.open =           snd_compr_open,
-		.release =        snd_compr_free,
-		.write =          snd_compr_write,
-		.read =           snd_compr_read,
+		.owner =	THIS_MODULE,
+		.open =		snd_compr_open,
+		.release =	snd_compr_free,
+		.write =	snd_compr_write,
+		.read =		snd_compr_read,
 		.unlocked_ioctl = snd_compr_ioctl,
 		.compat_ioctl   = snd_compr_ioctl,
-		.mmap =           snd_compr_mmap,
-		.poll =           snd_compr_poll,
+		.mmap =		snd_compr_mmap,
+		.poll =		snd_compr_poll,
 };
 
 static int snd_compress_dev_register(struct snd_device *device)
