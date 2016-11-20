@@ -855,7 +855,7 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 			    ctrl->qd_on_cmds.cmd_cnt) {
 				pr_info("%s: send qd init cmds\n", __func__);
 				mdss_dsi_panel_cmds_send(ctrl,
-					&ctrl->qd_on_cmds);
+					&ctrl->qd_on_cmds, CMD_REQ_COMMIT);
 			} else
 				pr_info("%s: skip panel init cmds\n", __func__);
 			goto end;
@@ -1842,9 +1842,9 @@ int mdss_dsi_panel_set_hbm(struct mdss_dsi_ctrl_pdata *ctrl, int state)
 	}
 
 	if (state)
-		mdss_dsi_panel_cmds_send(ctrl, &ctrl->hbm_on_cmds);
+		mdss_dsi_panel_cmds_send(ctrl, &ctrl->hbm_on_cmds, CMD_REQ_COMMIT);
 	else
-		mdss_dsi_panel_cmds_send(ctrl, &ctrl->hbm_off_cmds);
+		mdss_dsi_panel_cmds_send(ctrl, &ctrl->hbm_off_cmds, CMD_REQ_COMMIT);
 
 	ctrl->panel_data.panel_info.hbm_state = state;
 
@@ -1900,9 +1900,9 @@ int mdss_dsi_panel_set_acl(struct mdss_dsi_ctrl_pdata *ctrl, int state)
 	}
 
 	if (state)
-		mdss_dsi_panel_cmds_send(ctrl, &ctrl->acl_on_cmds);
+		mdss_dsi_panel_cmds_send(ctrl, &ctrl->acl_on_cmds, CMD_REQ_COMMIT);
 	else
-		mdss_dsi_panel_cmds_send(ctrl, &ctrl->acl_off_cmds);
+		mdss_dsi_panel_cmds_send(ctrl, &ctrl->acl_off_cmds, CMD_REQ_COMMIT);
 
 	ctrl->panel_data.panel_info.acl_state = state;
 
@@ -1939,7 +1939,7 @@ int mdss_dsi_panel_set_cabc(struct mdss_dsi_ctrl_pdata *ctrl, int mode)
 		return -EFAULT;
 	}
 
-	mdss_dsi_panel_cmds_send(ctrl, cmds);
+	mdss_dsi_panel_cmds_send(ctrl, cmds, CMD_REQ_COMMIT);
 	pinfo->cabc_mode = mode;
 	return 0;
 }
